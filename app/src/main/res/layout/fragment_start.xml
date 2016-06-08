@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="jp.co.nirvana0rigin.timerspeaker.Start">
+
+    <ImageView
+        android:id="@+id/car_img"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="220dp"
+        android:layout_height="220dp" />
+
+    <Button
+        android:id="@+id/start_b"
+        android:background="@drawable/start"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/darkgray"
+        android:layout_margin="30dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp" />
+
+</FrameLayout>

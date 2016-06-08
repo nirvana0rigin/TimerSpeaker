@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">TimerSpeaker</string>
+    <string name="max_time_title">max running hours:</string>
+    <string name="interval_time_title">speak every ? minutes:</string>
+    <string name="config_title">くるまとじかんのせってい</string>
+    <string name="cars">どのくるまに\nしようかな</string>
+    <string name="interval">なんふん\nごとにはなす</string>
+    <string name="max_time">さいだい\nなんじかん</string>
+    <string name="theme">はいけいは\nしろかくろ</string>
+    <string name="white">しろ</string>
+    <string name="black">くろ</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
