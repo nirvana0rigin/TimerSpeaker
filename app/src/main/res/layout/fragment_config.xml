@@ -41,6 +41,7 @@
                     style="@style/choice_image"
                     android:src="@drawable/c01"
                     android:id="@+id/car1" />
+
             </FrameLayout>
 
             <FrameLayout style="@style/choice">

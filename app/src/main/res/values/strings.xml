@@ -10,7 +10,16 @@
     <string name="white">しろ</string>
     <string name="black">くろ</string>
 
-<!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="info">音声合成ソフトを入れてください</string>
+    <string name="info2">英語でカウントします</string>
+    <string name="info3">日本語も英語もダメです</string>
+    <string name="info4">音声ソフト死んでます</string>
+    <string name="lang_jp">分</string>
+    <string name="lang_en">minute</string>
+
 
 </resources>

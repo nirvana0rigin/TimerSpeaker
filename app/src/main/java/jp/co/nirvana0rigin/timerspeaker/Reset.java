@@ -1,31 +1,32 @@
 package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 public class Reset extends Fragment {
 
-    private int[] param;
+    private static int[] param;
     private OnResetListener mListener;
+	private static  Bundle args;
+
+
+
+
+
+    //______________________________________________________for life cycles
 
     public static Reset newInstance(int[] param) {
         Reset fragment = new Reset();
-        Bundle args = new Bundle();
+        args = new Bundle();
         args.putIntArray("param", param);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void sendParam(int[] param) {
-        this.param = param;
     }
 
     public Reset() {
@@ -43,14 +44,60 @@ public class Reset extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reset, container, false);
+        View v =  inflater.inflate(R.layout.fragment_reset, container, false);
+        Button reset = (Button)v.findViewById(R.id.reset_b);
+        reset.setText(R.string.reset);
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                param[7] = 1;
+                param[4] = 2;
+                args.putIntArray("param", param);
+                onButtonPressed(param);
+            }
+        });
+        return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+	@Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //NOTHING
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //NOTHING
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        args.putIntArray("param",param);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putIntArray("param", param);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+
+
+
+    //____________________________________________________for connection on Activity
+
+    public void onButtonPressed(int[] param) {
         if (mListener != null) {
-            mListener.onReset();
+            mListener.onReset(param);
         }
     }
 
@@ -65,15 +112,22 @@ public class Reset extends Fragment {
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-
     public interface OnResetListener {
-        public void onReset();
+        public void onReset(int[] param);
 
     }
+
+
+
+
+    //____________________________________________________for work on Fragment
+
+
+
+
+
+
+
+
+
 }

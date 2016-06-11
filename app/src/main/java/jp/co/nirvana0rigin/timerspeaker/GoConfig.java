@@ -1,11 +1,8 @@
 package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +13,20 @@ public class GoConfig extends Fragment {
     private int[] param;
     private OnGoConfigListener mListener;
 
+
+
+
+
+
+
+    //_______________________________________________for life cycles
+
     public static GoConfig newInstance(int[] param) {
         GoConfig fragment = new GoConfig();
         Bundle args = new Bundle();
         args.putIntArray("param", param);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void sendParam(int[] param) {
-        this.param = param;
     }
 
     public GoConfig() {
@@ -41,10 +42,9 @@ public class GoConfig extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_go_config, container, false);
+
         Button goConfig = (Button) v.findViewById(R.id.go_config_b);
         goConfig.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,10 +52,53 @@ public class GoConfig extends Fragment {
                 onButtonPressed();
             }
         });
+
         return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //NOTHING
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //NOTHING
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //NOTHING
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //NOTHING
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+
+
+
+
+
+    //__________________________________________________for connection on Activity
+
+    public interface OnGoConfigListener {
+        public void onGoConfig();
+
+    }
+
     public void onButtonPressed() {
         if (mListener != null) {
             mListener.onGoConfig();
@@ -73,15 +116,15 @@ public class GoConfig extends Fragment {
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
 
 
-    public interface OnGoConfigListener {
-        public void onGoConfig();
 
-    }
+
+
+
+
+    //_________________________________________________for work on Fragment
+
+
+
 }

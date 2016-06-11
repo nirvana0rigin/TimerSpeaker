@@ -11,8 +11,7 @@
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".MainActivity"
-    android:id="@+id/activity_main"
-    style="@style/theme1">
+    android:id="@+id/activity_main">
 
     <FrameLayout
         android:layout_width="match_parent"
