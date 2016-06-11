@@ -57,30 +57,6 @@ public class GoConfig extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //NOTHING
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //NOTHING
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //NOTHING
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //NOTHING
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -96,7 +72,6 @@ public class GoConfig extends Fragment {
 
     public interface OnGoConfigListener {
         public void onGoConfig();
-
     }
 
     public void onButtonPressed() {
@@ -112,7 +87,7 @@ public class GoConfig extends Fragment {
             mListener = (OnGoConfigListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnGoConfigListener");
         }
     }
 

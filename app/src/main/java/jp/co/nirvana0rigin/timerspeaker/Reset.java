@@ -14,7 +14,7 @@ public class Reset extends Fragment {
     private static int[] param;
     private OnResetListener mListener;
 	private static  Bundle args;
-
+	private Button reset;
 
 
 
@@ -42,11 +42,12 @@ public class Reset extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    	if(savedInstanceState != null){
+        	param = savedInstanceState.getIntArray("param");
+        }
         View v =  inflater.inflate(R.layout.fragment_reset, container, false);
-        Button reset = (Button)v.findViewById(R.id.reset_b);
-        reset.setText(R.string.reset);
+        reset = (Button)v.findViewById(R.id.reset_b);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,18 +58,6 @@ public class Reset extends Fragment {
             }
         });
         return v;
-    }
-
-	@Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //NOTHING
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //NOTHING
     }
 
     @Override
@@ -108,7 +97,7 @@ public class Reset extends Fragment {
             mListener = (OnResetListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnResetListener");
         }
     }
 
@@ -116,6 +105,8 @@ public class Reset extends Fragment {
         public void onReset(int[] param);
 
     }
+
+
 
 
 

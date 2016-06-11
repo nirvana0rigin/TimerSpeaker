@@ -1,7 +1,5 @@
 package jp.co.nirvana0rigin.timerspeaker;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,9 +11,8 @@ import android.widget.TextView;
 public class Info extends Fragment {
 
     private int[] param;
-    private OnInfoListener mListener;
-    TextView maxHours ;
-    TextView interval;
+    private TextView maxHours ;
+    private TextView interval;
 	private static  Bundle args;
 
 
@@ -45,22 +42,29 @@ public class Info extends Fragment {
         }
     }
 
+	//Viewの生成のみ、表示はonStart
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_info, container, false);
         maxHours = (TextView) v.findViewById(R.id.max_hours);
-        maxHours.setText(""+param[2]);
         interval = (TextView) v.findViewById(R.id.interval);
-        interval.setText("" + param[1]);
         return v;
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //NOTHING
+    }
+
+    //選択された状況を表示
+    @Override
+    public void onStart() {
+        super.onStart();
+        maxHours.setText(""+param[2]);
+        interval.setText("" + param[1]);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class Info extends Fragment {
         super.onResume();
         //NOTHING
     }
-    
+
     @Override
     public void onStop() {
         super.onStop();
@@ -80,11 +84,10 @@ public class Info extends Fragment {
         outState.putIntArray("param", param);
         super.onSaveInstanceState(outState);
     }
-    
+
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
@@ -95,27 +98,7 @@ public class Info extends Fragment {
 
     //_____________________________________________________for connection on Activity
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onInfo();
-        }
-    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnInfoListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    public interface OnInfoListener {
-        public void onInfo();
-
-    }
 
 
 

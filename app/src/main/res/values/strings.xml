@@ -14,6 +14,7 @@
     <string name="reset">Reset</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="config">Setting</string>
     <string name="info">音声合成ソフトを入れてください</string>
     <string name="info2">英語でカウントします</string>
     <string name="info3">日本語も英語もダメです</string>

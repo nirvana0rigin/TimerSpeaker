@@ -20,14 +20,19 @@ public class Counter extends Fragment {
     private int[] param;
     private OnCounterListener mListener;
     private static Bundle args;
-    TextView hours;
-    TextView minutes;
-    TextView seconds;
-    int sec = 0;
-    int nowHour = 0;
+    private TextView hours;
+    private TextView minutes;
+    private TextView seconds;
+    static int sec = 0;
+    static int nowHour = 0;
+    static String ss = "00";
+    static String mm = "00";
+    static String hh = "00";
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> future;
     private Handler handler = new Handler();
+
+
 
 
 
@@ -56,13 +61,15 @@ public class Counter extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    	if(savedInstanceState != null) {
+            param = savedInstanceState.getIntArray("param");
+        }
         View v = inflater.inflate(R.layout.fragment_counter, container, false);
         hours = (TextView)v.findViewById(R.id.hours);
         minutes = (TextView) v.findViewById(R.id.minutes);
         seconds = (TextView) v.findViewById(R.id.seconds);
-        resetCounter();
+        setCounterView();
         scheduler = Executors.newSingleThreadScheduledExecutor();
         return v;
     }
@@ -73,6 +80,12 @@ public class Counter extends Fragment {
         //NOTHING
     }
 
+	@Override
+    public void onStart() {
+        super.onStart();
+        setCounterView();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -81,14 +94,16 @@ public class Counter extends Fragment {
 
     @Override
     public void onStop() {
+    	args.putIntArray("param",param);
         super.onStop();
-        args.putIntArray("param",param);
+        //s,m,h等は常に更新なので、保存しない
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putIntArray("param", param);
         super.onSaveInstanceState(outState);
+        //s,m,h等は常に更新なので、保存しない
     }
 
     @Override
@@ -96,6 +111,8 @@ public class Counter extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
 
 
@@ -131,47 +148,41 @@ public class Counter extends Fragment {
 
 
 
+
     //_______________________________________________for work this Fragment
 
+    public void setCounterView(){
+        hours.setText(hh);
+        minutes.setText(mm);
+        seconds.setText(ss);
+    }
+
     public void resetCounter(){
-        hours.setText("00");
-        minutes.setText("00");
-        seconds.setText("00");
-        sec = 0;
+    	resetCounterParams();
+    	setCounterView();
+    }
+
+    private void resetCounterParams(){
+    	ss = "00";
+    	mm = "00";
+    	hh = "00";
+    	sec = 0;
         nowHour = 0;
     }
 
-    public void startTimer(){
-        this.startTimerService();
+    public void callSeterOnHandler(){
+    	setCounterView();
     }
 
-    public void stopTimer(){
-        this.stopTimerService();
+    public void startTimer(){ future = scheduler.scheduleAtFixedRate(new Task(), 0, 1000, TimeUnit.MILLISECONDS);}
+
+	public void stopTimer() {
+        if (future != null) { future.cancel(true); }
     }
 
-    public void endedTimer(){
-        if(scheduler != null) {
-            scheduler.shutdownNow();
-        }
-    }
+    public void endTimer() { if(scheduler != null){ scheduler.shutdownNow(); } }
 
-    public void runningTimer(){
-
-    }
-
-    public void startTimerService() {
-        future = scheduler.scheduleAtFixedRate(new Task(), 0, 1000, TimeUnit.MILLISECONDS);
-    }
-
-    public void stopTimerService() {
-        if (future != null) {future.cancel(true);}
-    }
-
-    public void shutdownTimerService() {
-        scheduler.shutdownNow();
-    }
-
-    public class Task implements Runnable {
+    class Task implements Runnable {
         public void run() {
             handler.post(new Runnable() {
                 public void run() {
@@ -183,13 +194,14 @@ public class Counter extends Fragment {
                         onMinute(""+m);
                     }
                     nowHour = h;
-                    hours.setText(getXX(h));
-                    minutes.setText(getXX(m));
-                    seconds.setText(getXX(s));
+                    hh = getXX(h);
+                    mm = getXX(m);
+                    ss = getXX(s);
+                    callSeterOnHandler();
                 }
             });
         }
-        public String getXX(int i){
+        private String getXX(int i){
             String ii;
             if (i < 10) {
                 ii = ("" + 0) + i;
