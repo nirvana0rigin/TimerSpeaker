@@ -4,8 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 
 public class Sync extends Fragment {
@@ -17,20 +23,28 @@ public class Sync extends Fragment {
     */
     public static int[] param = {1,1,1,1,2,1,1,1};
     /*
-    0    車のNO
-    1    音声間隔
-    2    最大時間
-    3    背景色フラグ
-    4    スレッドと表示のステータス
+    0    車のNO  1,2,3,4
+    1    音声間隔  1,3,5,10
+    2    最大時間  1,2,3,5
+    3    背景色フラグ  1,2
+    4    スレッドと表示のステータス  0,1,2
     5    背景付き車ID
-    6    タイマースレッド動止
-    7    タイマースレッド生死
+    6    タイマー表示の動止  0,1(stopped==1)
+    7    タイマースレッド生死  0,1(dead==1)
     */
+
+    static int sec ;
+    static int s;
+    static int m;
+    static int h;
+
     private static Bundle args;
     private OnSyncListener mListener;
     public static Context con;
     public static Resources res;
-
+    private static ScheduledExecutorService scheduler;
+    private static ScheduledFuture<?> future;
+    private static Handler handler = new Handler();
 
 
 
@@ -39,8 +53,9 @@ public class Sync extends Fragment {
     //__________________________________________________for life cycles
 
     //初回は必ずここから起動
-    public static Sync newInstance(int[] p) {
+    public static Sync newInstance(int[] p, int s) {
         param =p;
+        sec = s;
         Sync fragment = new Sync();
         args = new Bundle();
         args.putIntArray("param", param);
@@ -59,25 +74,28 @@ public class Sync extends Fragment {
         if (getArguments() != null) {
             param = getArguments().getIntArray("param");
         }
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //NOTHING
+
+        //activity再生成時に破棄させないフラグを立てる
+		setRetainInstance(true);
     }
 
     //paramを復帰
     @Override
     public void onStart() {
         super.onStart();
-		args.getIntArray("param");
+		param = args.getIntArray("param");
 		toActivity(param);
     }
 
     @Override
     public void onStop() {
-        args.putIntArray("param",param);
+        args.putIntArray("param", param);
         super.onStop();
     }
 
@@ -93,6 +111,13 @@ public class Sync extends Fragment {
         mListener = null;
     }
 
+	@Override
+    public void onDestroy() {
+        stopTimer();
+        endTimer();
+        super.onDestroy();
+    }
+
 
 
 
@@ -103,14 +128,29 @@ public class Sync extends Fragment {
     //________________________________________________for connection on Activity
 
     public interface OnSyncListener {
-        public void onSync(int[] param);
+        public void onSyncParam(int[] param);
+        public void onSyncSec();
+        public void onSyncMin(String min);
     }
 
     public void toActivity(int[] param) {
         if (mListener != null) {
-            mListener.onSync(param);
+            mListener.onSyncParam(param);
         }
     }
+
+    public void sendSec() {
+        if (mListener != null) {
+            mListener.onSyncSec();
+        }
+    }
+
+    public void onMinute(String min) {
+        if (mListener != null) {
+            mListener.onSyncMin(min);
+        }
+    }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -134,15 +174,65 @@ public class Sync extends Fragment {
 
     //_________________________________________________for work on this Fragment
 
-    public void changeBackgroundAll(){
-
+    public void startTimer() {
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        future = scheduler.scheduleAtFixedRate(new Task(), 0, 1, TimeUnit.SECONDS);
     }
 
+    public void stopTimer() {
+        if (future != null) {
+            future.cancel(true);
+        }
+    }
 
+    public void endTimer() {
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+            scheduler = null;
+            sec = 0;
+            s = 0;
+            m = 0;
+            h = 0;
+            param[4] = 2;
+            param[6] = 1;
+            param[7] = 1;
+        }
+    }
 
+    private class Task implements Runnable {
+        public void run() {
+            handler.post(new Runnable() {
+                public void run() {
+                    sec++;
+                    createTime();
+                }
+            });
+        }
+    }
 
+    private void createTime() {
+        s = sec % 60;
+        m = (sec / 60) % 60;
+        h = (sec / 60) / 60;
+        sendSec();
+        if (s == 0) {
+            if (param[1] == m) {
+                onMinute("" + m);
+            }
+        }
+        if (h == param[2]) {
+            rewriteParam();
+        }
+    }
 
-
+    private void rewriteParam() {
+        param[6] = 1;
+        param[7] = 1;
+        param[4] = 2;
+        toActivity(param);
+        stopTimer();
+        endTimer();
+    }
 
 
 }

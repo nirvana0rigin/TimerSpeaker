@@ -59,16 +59,18 @@ public class Start extends Sync {
             public void onClick(View v) {
                 //スレッド生→生、タイマー生→止、0→1
                 if (param[4] == 0) {   //直前のステータス
-                    param[7] = 0;
-                    param[6] = 1;
+                    param[7] = 0; //thread
+                    param[6] = 1; //view
+                    param[4] = 1;
                     carAnimStop();
                     start.setPressed(false);
 
                     //スレッド生→生、タイマー止→生、1→0
                     //スレッド死→生、タイマー止→生、1→0
                 } else {   //status == 1,2	//直前のステータス
-                    param[7] = 0;
-                    param[6] = 0;
+                    param[7] = 0; //thread
+                    param[6] = 0; //view
+                    param[4] = 0;
                     carAnimNullCheckAndSet();
                     carAnimStart();
                     start.setPressed(true);
@@ -228,7 +230,7 @@ public class Start extends Sync {
         //carView.setImageBitmap(carBitmap);
         carView.setImageResource(param[5]);
         carAnimNullCheckAndSet();
-        if (param[4] == 1) {
+        if (param[4] == 0) {
             carAnimStart();
         }
     }

@@ -12,8 +12,7 @@ import android.widget.LinearLayout;
 
 public class MainActivity
 		extends AppCompatActivity
-        implements Config.OnConfigListener, GoConfig.OnGoConfigListener, Counter.OnCounterListener,
-         Reset.OnResetListener, Start.OnStartListener, Sync.OnSyncListener {
+        implements Config.OnConfigListener, GoConfig.OnGoConfigListener, Reset.OnResetListener, Start.OnStartListener, Sync.OnSyncListener {
 
     private Context con;
     private Resources res;
@@ -23,24 +22,28 @@ public class MainActivity
     //タイマーステータス（０～７）８つ。
     private static int[] param = {1,1,1,1,2,1,1,1};
     /*
-    0    車のNO
-    1    音声間隔
-    2    最大時間
-    3    背景色フラグ
-    4    スレッドと表示のステータス
+    0    車のNO  1,2,3,4
+    1    音声間隔  1,3,5,10
+    2    最大時間  1,2,3,5
+    3    背景色フラグ  1,2
+    4    スレッドと表示のステータス  0,1,2
     5    背景付き車ID
-    6    タイマースレッド動止
-    7    タイマースレッド生死
+    6    タイマー表示の動止  0,1(stopped==1)
+    7    タイマースレッド生死  0,1(dead==1)
     */
+
+    //タイマーメインカウンター初期値
+    static int sec = 0;
+
     private static String carStr = ("c"+ param[3] ) + param[0] ;
-    private Counter counter;
+    private static Counter counter;
     private Info info;
     private Start start;
     private GoConfig goConfig;
     private Reset reset;
     private Config config;
     private Speak speak;
-    private Sync sync;
+    private static Sync sync;
     private LinearLayout base;
 
     private Fragment[] fragments ;
@@ -77,6 +80,9 @@ public class MainActivity
             param = savedInstanceState.getIntArray("param");
         } else {
             b = new Bundle();
+            if(sync != null){
+                param = sync.param;
+            }
             b.putIntArray("param", param);
         }
         carStr = ("c" + param[3]) + param[0];
@@ -93,7 +99,11 @@ public class MainActivity
     @Override
     public void onStart() {
         super.onStart();
-        b.getIntArray("param");
+        if(sync == null) {
+            param = b.getIntArray("param");
+        }else{
+            param = sync.param;
+        }
         setBackground();
         createMainFragments();
         addMainFragments() ;
@@ -101,7 +111,7 @@ public class MainActivity
 
     @Override
     public void onStop() {
-        b.putIntArray("param",param);
+        b.putIntArray("param", param);
         super.onStop();
     }
 
@@ -110,7 +120,6 @@ public class MainActivity
         outState.putIntArray("param", param);
         super.onSaveInstanceState(outState);
     }
-
 
 
 
@@ -136,31 +145,21 @@ public class MainActivity
     }
 
     @Override
-    public void onCounter(String min) {
-        addNewSpeakFragment();
-        if(speak.getLang() <2) {
-            speak.speakMinute(min);
-        }else if(speak.getLang() == 2){
-			//NOTHING
-        }else{
-        	removeFragment(speak,"speak");
-            speak = null;
-            addNewSpeakFragment();
-        }
-    }
-
-    @Override
     public void onGoConfig() {
         removeMainFragments();
     }
 
     @Override
     public void onReset(int[] p) {
+        if (sync != null) {
+            sync.endTimer();
+        }
     	if( counter != null ){
             counter.resetCounter();
-            counter.endTimer();
         }
-        goConfig.addButton();
+        if (goConfig != null) {
+            goConfig.addButton();
+        }
     }
 
     @Override
@@ -176,18 +175,36 @@ public class MainActivity
         }
 		//タイマースレッドリセットは、resetボタンにて
 		if(param[6]==0){
-			counter.startTimer();
+			sync.startTimer();
 		}else{
-			counter.stopTimer();
+			sync.stopTimer();
 		}
     }
 
 	@Override
-    public void onSync(int[] p) {
+    public void onSyncParam(int[] p) {
     	param = p;
     	b.putIntArray("param", param);
     }
 
+    @Override
+    public void onSyncSec() {
+        counter.createTimeText();
+    }
+
+    @Override
+    public void onSyncMin(String min) {
+        addNewSpeakFragment();
+        if (speak.getLang() < 2) {
+            speak.speakMinute(min);
+        } else if (speak.getLang() == 2) {
+            //NOTHING
+        } else {
+            removeFragment(speak, "speak");
+            speak = null;
+            addNewSpeakFragment();
+        }
+    }
 
 
 
@@ -200,11 +217,21 @@ public class MainActivity
     private void createMainFragments() {
         addNewSyncFragment();
         addNewSpeakFragment();
-        counter = new Counter();
-        info = new Info();
-        start = new Start();
-        goConfig = new GoConfig();
-        reset = new Reset();
+        if(counter == null) {
+            counter = new Counter();
+        }
+        if (info == null) {
+            info = new Info();
+        }
+        if (start == null) {
+            start = new Start();
+        }
+        if (goConfig == null) {
+            goConfig = new GoConfig();
+        }
+        if (reset == null) {
+            reset = new Reset();
+        }
         Fragment[] fragments2 = {counter, info, start, goConfig, reset};
         fragments = fragments2;
     }
@@ -255,7 +282,7 @@ public class MainActivity
     private void addNewSyncFragment() {
         if (!(isAlive("sync"))) {
             if (sync == null) {
-                sync = Sync.newInstance(param);
+                sync = Sync.newInstance(param,sec);
             }
             fm.beginTransaction().add(sync, "sync").commit();
         }
