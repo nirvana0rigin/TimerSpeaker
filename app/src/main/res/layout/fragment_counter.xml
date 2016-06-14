@@ -10,7 +10,8 @@
         android:layout_height="120dp"
         android:orientation="horizontal"
         android:layout_gravity="center"
-        android:gravity="center">
+        android:gravity="center"
+        android:id="@+id/base_counter">
 
         <TextView
             android:layout_width="84dp"

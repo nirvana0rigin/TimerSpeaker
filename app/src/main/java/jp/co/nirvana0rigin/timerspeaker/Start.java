@@ -3,39 +3,38 @@ package jp.co.nirvana0rigin.timerspeaker;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-public class Start extends Fragment {
+public class Start extends Sync {
 
-    private static int[] param;
     private OnStartListener mListener;
     private Bitmap carBitmap;
     private ImageView carView;
     private Button start;
-    private static int status;
+    private LinearLayout base;
+    private View v;
     private ObjectAnimator anim;
     private static Bundle args;
 
 
     //__________________________________________________for life cycles
 
-    public static Start newInstance(int[] paramA) {
+    /*
+    public static Start newInstance(int[] p) {
         Start fragment = new Start();
-        param = paramA;
-        status = param[7] + param[6];
         args = new Bundle();
-        args.putIntArray("param", param);
         fragment.setArguments(args);
         return fragment;
     }
+    */
 
     public Start() {
         // Required empty public constructor
@@ -44,25 +43,22 @@ public class Start extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            param = getArguments().getIntArray("param");
-        }
+        //NOTHING
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle outState) {
-        if (outState != null) {
-            param = outState.getIntArray("param");
-        }
-        View v = inflater.inflate(R.layout.fragment_start, container, false);
+        v = inflater.inflate(R.layout.fragment_start, container, false);
 
+        base = (LinearLayout) v.findViewById(R.id.base_start);
         carView = (ImageView) v.findViewById(R.id.car_img);
         start = (Button) v.findViewById(R.id.start_b);
         start.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 //スレッド生→生、タイマー生→止、0→1
-                if (status == 0) {   //直前のステータス
+                if (param[4] == 0) {   //直前のステータス
                     param[7] = 0;
                     param[6] = 1;
                     carAnimStop();
@@ -77,9 +73,10 @@ public class Start extends Fragment {
                     carAnimStart();
                     start.setPressed(true);
                 }
-                nowStatus();
-                changeLavel(status);
-                onButtonPressed(param);
+                param[4] = param[7] + param[6];
+                toActivity(param);
+                changeLavel(param[4]);
+                onButtonPressed();
             }
         });
         return v;
@@ -93,37 +90,27 @@ public class Start extends Fragment {
 
     @Override
     public void onStart() {
+        setBackground();
+        changeLavel(param[4]);
+        carAnimRestart();
         super.onStart();
-        nowStatus();
-        changeLavel(status);
-        carBitmap = BitmapFactory.decodeResource(getResources(), param[5]);
-        carView.setImageBitmap(carBitmap);
-        carAnimNullCheckAndSet();
-        if (status == 1) {
-            carAnimStart();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //NOTHING
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        args.putIntArray("param", param);
+        //carView.setImageDrawable(null);
+        //carBitmap.recycle();
         carView.setImageDrawable(null);
-        carBitmap.recycle();
         carBitmap = null;
     }
 
-    @Override
+    /*
+    public void onResume() {
     public void onSaveInstanceState(Bundle outState) {
-        outState.putIntArray("param", param);
-        super.onSaveInstanceState(outState);
-    }
+        //NOTHING
+    */
+
 
     @Override
     public void onDetach() {
@@ -132,10 +119,16 @@ public class Start extends Fragment {
     }
 
 
+
+
+
+
+
+
     //________________________________________________for connection on Activity
 
     public interface OnStartListener {
-        public void onStartB(int[] param);
+        public void onStartButton();
     }
 
     @Override
@@ -149,19 +142,27 @@ public class Start extends Fragment {
         }
     }
 
-    public void onButtonPressed(int[] param) {
+    public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onStartB(param);
+            mListener.onStartButton();
         }
     }
 
 
+
+
+
+
+
+
     //_________________________________________________for work on this Fragment
 
-    private void nowStatus() {
-        status = param[7] + param[6];
-        param[4] = status;
-        args.putIntArray("param", param);
+    private void setBackground() {
+        if (param[3] == 1) {
+            base.setBackgroundColor(Color.BLACK);
+        } else {
+            base.setBackgroundColor(Color.WHITE);
+        }
     }
 
     private void changeLavel(int status) {
@@ -172,21 +173,23 @@ public class Start extends Fragment {
         }
     }
 
+    public void resetCarAnim(){
+        anim = null;
+    }
+
     private void setCarAnim(ImageView target, int car, int maxHours) {
         anim = ObjectAnimator.ofFloat(target, "rotation", 0f, 360f);
-        anim.setDuration(500 * car);
+        int speedParMilliSeconds =1000 * car;
+        int maxHoursSeconds = maxHours * 60 * 60;
+        anim.setDuration(speedParMilliSeconds);
         anim.setInterpolator(new LinearInterpolator());
-        anim.setRepeatCount((maxHours * 60) * (60 / (5 * car)));
+        anim.setRepeatCount( maxHoursSeconds / (speedParMilliSeconds/1000) );
         anim.setRepeatMode(ObjectAnimator.RESTART);
     }
 
     private void carAnimNullCheckAndSet() {
         if (anim != null) {
-            if (anim.getTarget() == null) {
-                anim.setTarget(carView);
-            } else {
-                //NOTHING   コネクション&アニメOK
-            }
+            anim.setTarget(carView);
         } else {
             setCarAnim(carView, param[0], param[2]);
         }
@@ -220,5 +223,14 @@ public class Start extends Fragment {
         }
     }
 
+    private void carAnimRestart(){
+        //carBitmap = BitmapFactory.decodeResource(getResources(), param[5]);
+        //carView.setImageBitmap(carBitmap);
+        carView.setImageResource(param[5]);
+        carAnimNullCheckAndSet();
+        if (param[4] == 1) {
+            carAnimStart();
+        }
+    }
 
 }

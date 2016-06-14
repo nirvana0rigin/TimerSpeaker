@@ -2,6 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="jp.co.nirvana0rigin.timerspeaker.Reset">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/reset_base">
+
     <Button
         android:id="@+id/reset_b"
         android:background="@drawable/reset"
@@ -11,5 +16,7 @@
         android:text="@string/reset"
         android:layout_width="60dp"
         android:layout_height="60dp" />
+
+    </LinearLayout>
 
 </FrameLayout>

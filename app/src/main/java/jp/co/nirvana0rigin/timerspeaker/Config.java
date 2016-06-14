@@ -1,20 +1,19 @@
 package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 
-public class Config extends Fragment implements View.OnClickListener {
+public class Config extends Sync implements View.OnClickListener {
 
-    private static int[] param = {1,1,1,1,2,1,1,1};
+
     private Button[] cFlag = new Button[11];
     private Button[] iFlag = new Button[11];
     private Button[] hFlag = new Button[11];
@@ -23,8 +22,6 @@ public class Config extends Fragment implements View.OnClickListener {
 
     private OnConfigListener mListener;
     private static Bundle args;
-    private Context con;
-    private Resources res;
 
     private Button car1;
     private Button car2;
@@ -40,6 +37,7 @@ public class Config extends Fragment implements View.OnClickListener {
     private Button hours5;
     private Button theme1;
     private Button theme2;
+    private LinearLayout base;
     private View v;
 
 
@@ -50,35 +48,32 @@ public class Config extends Fragment implements View.OnClickListener {
 
     //__________________________________________________for life cycles
 
+    /*
     //初回は必ずここから起動
     public static Config newInstance(int[] param) {
         Config fragment = new Config();
         args = new Bundle();
-        args.putIntArray("param", param);
         fragment.setArguments(args);
         return fragment;
     }
+    */
 
     public Config() {
         // Required empty public constructor
     }
 
-    //paramの復帰のみ
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            param = getArguments().getIntArray("param");
-        }
+        //NOTHING
     }
 
     //Viewの生成のみ、表示はonStart
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        con = getContext();
-        res = getResources();
         v = inflater.inflate(R.layout.fragment_config, container, false);
 
+        base = (LinearLayout) v.findViewById(R.id.base_config);
         car1 = (Button) v.findViewById(R.id.car1);
         car1.setOnClickListener(this);
         cFlag[1] = car1;
@@ -114,10 +109,6 @@ public class Config extends Fragment implements View.OnClickListener {
         Button[][] flag2 = {cFlag, iFlag, hFlag, tFlag};
         flag = flag2;
 
-        if(savedInstanceState != null) {
-            param = savedInstanceState.getIntArray("param");
-        }
-
         v.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -143,25 +134,15 @@ public class Config extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
         setSelectColor();
+        setBackground();
     }
 
-    @Override
+    /*
     public void onResume() {
-        super.onResume();
-        //NOTHING
-    }
-
-    @Override
     public void onStop() {
-        args.putIntArray("param",param);
-        super.onStop();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putIntArray("param", param);
-        super.onSaveInstanceState(outState);
-    }
+        //NOTHING
+    */
 
     @Override
     public void onDetach() {
@@ -179,13 +160,13 @@ public class Config extends Fragment implements View.OnClickListener {
     //________________________________________________for connection on Activity
 
     public interface OnConfigListener {
-        public void onConfig(int[] param);
+        public void onConfig();
         public void onConfigBackButton();
     }
 
-    public void onButtonPressed(int[] param) {
+    public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onConfig(param);
+            mListener.onConfig();
         }
     }
 
@@ -206,6 +187,7 @@ public class Config extends Fragment implements View.OnClickListener {
         }
         con = activity.getApplication().getApplicationContext();
     }
+
 
 
 
@@ -239,19 +221,23 @@ public class Config extends Fragment implements View.OnClickListener {
         param[target] = i;
         String carStr = ("c" + param[3]) + param[0];
         param[5] = res.getIdentifier(carStr, "drawable", con.getPackageName());
-        args.putIntArray("param",param);
         setSelectColor();
-        onButtonPressed(param);
+        setBackground();
+        setSelectColor();
+        toActivity(param);
+        if(id == R.id.theme1 || id == R.id.theme2 || id == R.id.car1 || id == R.id.car2 || id == R.id.car3 || id == R.id.car4) {
+            onButtonPressed();
+        }
     }
 
-    private void setSelectColor(){
+    void setSelectColor(){
         setNotSelectColor();
         for(int i=0; i<4; i++){
             ((Button)flag[i][param[i]]).setPressed(true);
         }
     }
 
-    private void setNotSelectColor(){
+    void setNotSelectColor(){
         for(int i=0; i<4; i++){
             for(int j=1; j<11; j++){
                 if(flag[i][j]==null){
@@ -263,7 +249,13 @@ public class Config extends Fragment implements View.OnClickListener {
         }
     }
 
-
+    private void setBackground(){
+        if(param[3] == 1) {
+            base.setBackgroundColor(Color.BLACK);
+        }else{
+            base.setBackgroundColor(Color.WHITE);
+        }
+    }
 
 
 }

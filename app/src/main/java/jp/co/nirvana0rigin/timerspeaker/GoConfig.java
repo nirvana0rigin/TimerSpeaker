@@ -2,18 +2,18 @@ package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
-public class GoConfig extends Fragment {
+public class GoConfig extends Sync {
 
-    private int[] param;
     private OnGoConfigListener mListener;
-
-
+	private static Bundle args;
+    private LinearLayout base;
+    private Button goConfig;
 
 
 
@@ -21,13 +21,14 @@ public class GoConfig extends Fragment {
 
     //_______________________________________________for life cycles
 
+    /*
     public static GoConfig newInstance(int[] param) {
         GoConfig fragment = new GoConfig();
-        Bundle args = new Bundle();
-        args.putIntArray("param", param);
+        args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
+    */
 
     public GoConfig() {
         // Required empty public constructor
@@ -36,16 +37,15 @@ public class GoConfig extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            param = getArguments().getIntArray("param");
-        }
+		//NOTHING
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_go_config, container, false);
 
-        Button goConfig = (Button) v.findViewById(R.id.go_config_b);
+        base = (LinearLayout) v.findViewById(R.id.base_go_config);
+        goConfig = (Button) v.findViewById(R.id.go_config_b);
         goConfig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +55,14 @@ public class GoConfig extends Fragment {
 
         return v;
     }
+
+	/*
+	public void onStart()
+    public void onResume() {
+    public void onStop() {
+    public void onSaveInstanceState(Bundle outState) {
+        //NOTHING
+    */
 
     @Override
     public void onDetach() {
@@ -100,6 +108,16 @@ public class GoConfig extends Fragment {
 
     //_________________________________________________for work on Fragment
 
+    public void removeButton(){
+        if(base.getChildAt(0) != null){
+            base.removeView(goConfig);
+        }
+    }
 
+    public void addButton() {
+        if (base.getChildAt(0) == null) {
+            base.addView(goConfig);
+        }
+    }
 
 }

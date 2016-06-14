@@ -2,32 +2,32 @@ package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 
-public class Reset extends Fragment {
+public class Reset extends Sync {
 
-    private static int[] param;
     private OnResetListener mListener;
 	private static  Bundle args;
 	private Button reset;
-
+    private LinearLayout base;
 
 
 
     //______________________________________________________for life cycles
 
+    /*
     public static Reset newInstance(int[] param) {
         Reset fragment = new Reset();
         args = new Bundle();
-        args.putIntArray("param", param);
         fragment.setArguments(args);
         return fragment;
     }
+    */
 
     public Reset() {
         // Required empty public constructor
@@ -36,41 +36,34 @@ public class Reset extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            param = getArguments().getIntArray("param");
-        }
+		//NOTHING
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-    	if(savedInstanceState != null){
-        	param = savedInstanceState.getIntArray("param");
-        }
         View v =  inflater.inflate(R.layout.fragment_reset, container, false);
+
+        base = (LinearLayout) v.findViewById(R.id.reset_base);
         reset = (Button)v.findViewById(R.id.reset_b);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 param[7] = 1;
                 param[4] = 2;
-                args.putIntArray("param", param);
+                toActivity( param);
                 onButtonPressed(param);
             }
         });
         return v;
     }
 
-    @Override
+    /*
+    public void onResume() {
     public void onStop() {
-        super.onStop();
-        args.putIntArray("param",param);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putIntArray("param", param);
-        super.onSaveInstanceState(outState);
-    }
+        //NOTHING
+    */
+
 
     @Override
     public void onDetach() {
@@ -113,10 +106,17 @@ public class Reset extends Fragment {
 
     //____________________________________________________for work on Fragment
 
+    public void removeButton() {
+        if (base.getChildAt(0) != null) {
+            base.removeView(reset);
+        }
+    }
 
-
-
-
+    public void addButton() {
+        if (base.getChildAt(0) == null) {
+            base.addView(reset);
+        }
+    }
 
 
 

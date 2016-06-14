@@ -8,11 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity
+		extends AppCompatActivity
         implements Config.OnConfigListener, GoConfig.OnGoConfigListener, Counter.OnCounterListener,
-         Reset.OnResetListener, Start.OnStartListener {
+         Reset.OnResetListener, Start.OnStartListener, Sync.OnSyncListener {
 
     private Context con;
     private Resources res;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity
     7    タイマースレッド生死
     */
     private static String carStr = ("c"+ param[3] ) + param[0] ;
-
     private Counter counter;
     private Info info;
     private Start start;
@@ -40,7 +40,9 @@ public class MainActivity extends AppCompatActivity
     private Reset reset;
     private Config config;
     private Speak speak;
-    private FrameLayout configBack;
+    private Sync sync;
+    private LinearLayout base;
+
     private Fragment[] fragments ;
 	private int[] fragmentsID;
     private String[] fragmentsTag = {"counter","info","start","go_config","reset"};
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity
         3: go_config
         4: reset
      */
+
+
 
 
 
@@ -78,14 +82,8 @@ public class MainActivity extends AppCompatActivity
         carStr = ("c" + param[3]) + param[0];
         param[5] = res.getIdentifier(carStr, "drawable", con.getPackageName());
 
-		if (savedInstanceState != null) {
-            param = savedInstanceState.getIntArray("param");
-        }else{
-            b = new Bundle();
-            b.putIntArray("param",param);
-        }
+        base = (LinearLayout)findViewById(R.id.activity_main);
 
-        configBack = (FrameLayout)findViewById(R.id.config);
         int[] fragmentsID2 = {R.id.counter, R.id.info, R.id.start, R.id.go_config, R.id.reset };
         fragmentsID = fragmentsID2;
 
@@ -95,7 +93,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        setTheme();
+        b.getIntArray("param");
+        setBackground();
         createMainFragments();
         addMainFragments() ;
     }
@@ -123,9 +122,11 @@ public class MainActivity extends AppCompatActivity
     //___________________________________________________for connection on Fragments
 
     @Override
-    public void onConfig(int[] p){
-    	setParam(p);
-    	setTheme();
+    public void onConfig(){
+        setBackground();
+        if(start!= null) {
+            start.resetCarAnim();
+        }
     }
 
     @Override
@@ -136,9 +137,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCounter(String min) {
-        if( isAlive("speak") ){
-            addNewSpeakFragment();
-        }
+        addNewSpeakFragment();
         if(speak.getLang() <2) {
             speak.speakMinute(min);
         }else if(speak.getLang() == 2){
@@ -157,36 +156,37 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onReset(int[] p) {
-        setParam(p);
     	if( counter != null ){
             counter.resetCounter();
             counter.endTimer();
         }
-        goConfig = GoConfig.newInstance(param);
-        addNewFragment(R.id.go_config, goConfig,"go_config");
+        goConfig.addButton();
     }
 
     @Override
-    public void onStartB(int[] p) {
-        setParam(p);
+    public void onStartButton() {
         if(param[4] == 0){
-            removeTowFragments();
+            goConfig.removeButton();
+            reset.removeButton();
+            speak.speakMinute("start");
         }else if(param[4] == 1){
-            addNewFragment(R.id.reset, reset, "reset");
+            reset.addButton();
         }else if (param[4] == 2) {
             //NOTHING
         }
-
+		//タイマースレッドリセットは、resetボタンにて
 		if(param[6]==0){
-			//タイマースレッドを「止→動」(ボタンstop表示の時)に変更
 			counter.startTimer();
 		}else{
-			//タイマースレッドを「動→止」(ボタンstart表示の時)に変更
 			counter.stopTimer();
-			//タイマースレッドリセットは、resetボタンにて
 		}
     }
 
+	@Override
+    public void onSync(int[] p) {
+    	param = p;
+    	b.putIntArray("param", param);
+    }
 
 
 
@@ -198,11 +198,13 @@ public class MainActivity extends AppCompatActivity
     //___________________________________________________________for work on Activity
 
     private void createMainFragments() {
-        counter = Counter.newInstance(param);
-        info = Info.newInstance(param);
-        start =Start.newInstance(param);
-        goConfig = GoConfig.newInstance(param);
-        reset = Reset.newInstance(param);
+        addNewSyncFragment();
+        addNewSpeakFragment();
+        counter = new Counter();
+        info = new Info();
+        start = new Start();
+        goConfig = new GoConfig();
+        reset = new Reset();
         Fragment[] fragments2 = {counter, info, start, goConfig, reset};
         fragments = fragments2;
     }
@@ -215,12 +217,8 @@ public class MainActivity extends AppCompatActivity
         }
         for(int i=0; i<5; i++){
             if (!isAlive(fragmentsTag[i])) {
-                transaction.add(fragmentsID[i], fragments[i],fragmentsTag[i]);
+                transaction.add(fragmentsID[i], fragments[i], fragmentsTag[i]);
             }
-        }
-        if( !(isAlive("speak")) ) {
-        	speak = new Speak();
-        	transaction.add(speak, "speak");
         }
         transaction.commit();
     }
@@ -228,39 +226,38 @@ public class MainActivity extends AppCompatActivity
     private void removeMainFragments(){
     	FragmentTransaction transaction = fm.beginTransaction();
         for(int i=0; i<5; i++){
-    		transaction.remove(fragments[i]);
+            if(isAlive(fragmentsTag[i]) ) {
+                transaction.remove(fragments[i]);
+            }
     	}
     	transaction.addToBackStack(null);
 
-        if(!(isAlive("config"))) {
-            config = Config.newInstance(param);
-            transaction.add(R.id.config, config, "Config");
+        if(!(isAlive("config")) ){
+        	if(config ==null) {
+            	config = new Config();
+            }
+            transaction.add(R.id.config, config, "config");
         }else{
             transaction.show(config);
         }
         transaction.commit();
     }
 
-    private void removeTowFragments() {
-        FragmentTransaction transaction = fm.beginTransaction();
-        if ((isAlive("goConfig"))) {
-            transaction.remove(goConfig);
-        }
-        if ((isAlive("reset"))) {
-            transaction.remove(config);
-        }
-        transaction.commit();
-    }
-
     private void addNewSpeakFragment() {
-        if (!isAlive("speak")) {
-            fm.beginTransaction().add(new Speak(), "speak").commit();
+        if (!(isAlive("speak"))) {
+            if (speak == null) {
+                speak = new Speak();
+            }
+            fm.beginTransaction().add(speak, "speak").commit();
         }
     }
 
-    private void addNewFragment(int r, Fragment fra,String tag) {
-        if(!isAlive(tag)) {
-            fm.beginTransaction().add(r, fra, tag).commit();
+    private void addNewSyncFragment() {
+        if (!(isAlive("sync"))) {
+            if (sync == null) {
+                sync = Sync.newInstance(param);
+            }
+            fm.beginTransaction().add(sync, "sync").commit();
         }
     }
 
@@ -278,18 +275,12 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-     private void setTheme(){
-     	if(param[3] == 1){
-         	configBack.setBackgroundColor(Color.BLACK);
-     	}
-     	if(param[3] == 0){
-         	configBack.setBackgroundColor(Color.WHITE);
-         }
-     }
-
-    private void setParam(int[] p){
-        param = p;
-        b.putIntArray("param", param);
+    private void setBackground() {
+        if (param[3] == 1) {
+            base.setBackgroundColor(Color.BLACK);
+        } else {
+            base.setBackgroundColor(Color.WHITE);
+        }
     }
 
 }
