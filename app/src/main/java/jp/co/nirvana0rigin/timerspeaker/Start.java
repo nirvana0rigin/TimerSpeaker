@@ -2,7 +2,7 @@ package jp.co.nirvana0rigin.timerspeaker;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.graphics.Bitmap;
+//import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,16 +13,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class Start extends Sync {
+public class Start extends Sync implements View.OnClickListener{
 
     private OnStartListener mListener;
-    private Bitmap carBitmap;
+    //private Bitmap carBitmap;
     private ImageView carView;
     private Button start;
     private LinearLayout base;
     private View v;
     private ObjectAnimator anim;
-    private static Bundle args;
+    //private static Bundle args;
 
 
     //__________________________________________________for life cycles
@@ -53,34 +53,7 @@ public class Start extends Sync {
         base = (LinearLayout) v.findViewById(R.id.base_start);
         carView = (ImageView) v.findViewById(R.id.car_img);
         start = (Button) v.findViewById(R.id.start_b);
-        start.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                //スレッド生→生、タイマー生→止、0→1
-                if (param[4] == 0) {   //直前のステータス
-                    param[7] = 0; //thread
-                    param[6] = 1; //view
-                    param[4] = 1;
-                    carAnimStop();
-                    start.setPressed(false);
-
-                    //スレッド生→生、タイマー止→生、1→0
-                    //スレッド死→生、タイマー止→生、1→0
-                } else {   //status == 1,2	//直前のステータス
-                    param[7] = 0; //thread
-                    param[6] = 0; //view
-                    param[4] = 0;
-                    carAnimNullCheckAndSet();
-                    carAnimStart();
-                    start.setPressed(true);
-                }
-                param[4] = param[7] + param[6];
-                toActivity(param);
-                changeLavel(param[4]);
-                onButtonPressed();
-            }
-        });
+        start.setOnClickListener(this);
         return v;
     }
 
@@ -101,10 +74,9 @@ public class Start extends Sync {
     @Override
     public void onStop() {
         super.onStop();
-        //carView.setImageDrawable(null);
-        //carBitmap.recycle();
         carView.setImageDrawable(null);
-        carBitmap = null;
+        //carBitmap.recycle();
+        //carBitmap = null;
     }
 
     /*
@@ -119,7 +91,6 @@ public class Start extends Sync {
         super.onDetach();
         mListener = null;
     }
-
 
 
 
@@ -175,7 +146,7 @@ public class Start extends Sync {
         }
     }
 
-    public void resetCarAnim(){
+    public void removeCarAnim(){
         anim = null;
     }
 
@@ -234,5 +205,32 @@ public class Start extends Sync {
             carAnimStart();
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        //スレッド生→生、タイマー止→生、ステータス1→0
+        if (param[4] == 0) {   //直前のステータス
+            param[7] = 0; //thread
+            param[6] = 1; //view
+            param[4] = 1;
+            carAnimStop();
+            start.setBackgroundResource(R.drawable.start_false);
+
+        //スレッド生→生、タイマー止→生、ステータス1→0
+        //スレッド死→生、タイマー止→生、ステータス1→0
+        } else {   //status == 1,2	//直前のステータス
+            param[7] = 0; //thread
+            param[6] = 0; //view
+            param[4] = 0;
+            carAnimNullCheckAndSet();
+            carAnimStart();
+            start.setBackgroundResource(R.drawable.start_true);
+        }
+        param[4] = param[7] + param[6];
+        toActivity(param);
+        changeLavel(param[4]);
+        onButtonPressed();
+    }
+
 
 }

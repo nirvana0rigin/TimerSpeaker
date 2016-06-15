@@ -2,7 +2,6 @@ package jp.co.nirvana0rigin.timerspeaker;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,9 @@ import android.widget.TextView;
 public class Counter extends Sync {
 
     private static Bundle args;
-    private TextView hours;
-    private TextView minutes;
-    private TextView seconds;
+    private static TextView hours;
+    private static TextView minutes;
+    private static TextView seconds;
     private LinearLayout base;
     private View v;
     static String ss = "00";
@@ -54,7 +53,7 @@ public class Counter extends Sync {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        if(v ==null) {
+        if(v == null) {
             v = inflater.inflate(R.layout.fragment_counter, container, false);
             base = (LinearLayout) v.findViewById(R.id.base_counter);
             hours = (TextView) v.findViewById(R.id.hours);

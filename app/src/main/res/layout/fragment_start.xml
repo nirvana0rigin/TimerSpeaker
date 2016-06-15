@@ -22,10 +22,10 @@
 
         <Button
             android:id="@+id/start_b"
-            android:background="@drawable/start"
+            android:background="@drawable/start_false"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@color/darkgray"
+            android:textColor="@color/white"
             android:layout_margin="30dp"
             android:layout_width="160dp"
             android:layout_height="160dp" />

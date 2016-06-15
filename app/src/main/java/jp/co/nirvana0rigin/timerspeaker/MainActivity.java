@@ -36,7 +36,7 @@ public class MainActivity
     static int sec = 0;
 
     private static String carStr = ("c"+ param[3] ) + param[0] ;
-    private static Counter counter;
+    private Counter counter;
     private Info info;
     private Start start;
     private GoConfig goConfig;
@@ -134,7 +134,7 @@ public class MainActivity
     public void onConfig(){
         setBackground();
         if(start!= null) {
-            start.resetCarAnim();
+            start.removeCarAnim();
         }
     }
 

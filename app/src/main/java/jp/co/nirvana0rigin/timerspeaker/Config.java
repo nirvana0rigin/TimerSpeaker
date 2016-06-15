@@ -221,7 +221,6 @@ public class Config extends Sync implements View.OnClickListener {
         param[target] = i;
         String carStr = ("c" + param[3]) + param[0];
         param[5] = res.getIdentifier(carStr, "drawable", con.getPackageName());
-        setSelectColor();
         setBackground();
         setSelectColor();
         toActivity(param);
@@ -232,18 +231,36 @@ public class Config extends Sync implements View.OnClickListener {
 
     void setSelectColor(){
         setNotSelectColor();
-        for(int i=0; i<4; i++){
-            ((Button)flag[i][param[i]]).setPressed(true);
+        for(int i=0; i<4; i++) {
+            if (i == 0) {
+                String cs = "choice_car0" + param[i] + "t";
+                int ci = res.getIdentifier(cs, "drawable", con.getPackageName());
+                ((Button) flag[i][param[i]]).setBackgroundResource(ci);
+            }else{
+                ((Button) flag[i][param[i]]).setBackgroundResource(R.drawable.choice_true);
+            }
         }
     }
 
     void setNotSelectColor(){
-        for(int i=0; i<4; i++){
-            for(int j=1; j<11; j++){
-                if(flag[i][j]==null){
-                    //NOTHING
-                }else{
-                    ((Button)flag[i][j]).setPressed(false);
+        for(int i=0; i<4; i++) {
+            if (i == 0) {
+                for (int j = 1; j < 11; j++) {
+                    if (flag[i][j] == null) {
+                        //NOTHING
+                    } else {
+                        String cs = "choice_car0"+j+"f";
+                        int ci = res.getIdentifier(cs, "drawable", con.getPackageName());
+                        ((Button) flag[i][j]).setBackgroundResource(ci);
+                    }
+                }
+            } else {
+                for (int j = 1; j < 11; j++) {
+                    if (flag[i][j] == null) {
+                        //NOTHING
+                    } else {
+                        ((Button) flag[i][j]).setBackgroundResource(R.drawable.choice_false);
+                    }
                 }
             }
         }

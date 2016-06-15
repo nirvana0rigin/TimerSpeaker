@@ -12,7 +12,7 @@
         android:background="@drawable/reset"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textColor="@color/darkgray"
+        android:textColor="@color/white"
         android:text="@string/reset"
         android:layout_width="60dp"
         android:layout_height="60dp" />

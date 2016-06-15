@@ -1,12 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- ボタンタップ時 定義 -->
     <item android:state_pressed="true">
         <shape android:shape="oval" android:useLevel="false">
-            <solid android:color="@color/red" />
+            <solid android:color="@color/darkcyan2" />
             <size
-                android:height="180dp"
-                android:width="180dp" />
+                android:height="80dp"
+                android:width="80dp" />
         </shape>
     </item>
 
@@ -15,8 +17,8 @@
         <shape android:shape="oval" android:useLevel="false">
             <solid android:color="@color/darkcyan" />
             <size
-                android:height="180dp"
-                android:width="180dp" />
+                android:height="60dp"
+                android:width="60dp" />
         </shape>
     </item>
 </selector>

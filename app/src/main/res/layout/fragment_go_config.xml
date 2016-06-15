@@ -11,10 +11,10 @@
         android:id="@+id/base_go_config">
 
     <Button
-        android:background="@drawable/config"
+        android:background="@drawable/go_config"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textColor="@color/darkgray"
+        android:textColor="@color/white"
         android:text="@string/config"
         android:layout_width="60dp"
         android:layout_height="60dp"

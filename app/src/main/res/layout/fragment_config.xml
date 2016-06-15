@@ -31,22 +31,22 @@
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice_car01"
+                android:background="@drawable/choice_car01f"
                 android:id="@+id/car1" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice_car02"
+                android:background="@drawable/choice_car02f"
                 android:id="@+id/car2" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice_car03"
+                android:background="@drawable/choice_car03f"
                 android:id="@+id/car3" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice_car04"
+                android:background="@drawable/choice_car04f"
                 android:id="@+id/car4" />
 
         </LinearLayout>
@@ -63,25 +63,25 @@
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="1"
                 android:id="@+id/interval1" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="3"
                 android:id="@+id/interval3" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="5"
                 android:id="@+id/interval5" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="10"
                 android:id="@+id/interval10" />
 
@@ -99,25 +99,25 @@
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="1"
                 android:id="@+id/hours1" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="2"
                 android:id="@+id/hours2" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="3"
                 android:id="@+id/hours3" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="5"
                 android:id="@+id/hours5" />
 
@@ -135,13 +135,13 @@
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="@string/black"
                 android:id="@+id/theme1" />
 
             <Button
                 style="@style/choice_button"
-                android:background="@drawable/choice"
+                android:background="@drawable/choice_false"
                 android:text="@string/white"
                 android:id="@+id/theme2" />
 
