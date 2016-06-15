@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -74,15 +73,14 @@ public class Sync extends Fragment {
         if (getArguments() != null) {
             param = getArguments().getIntArray("param");
         }
-
+		//activity再生成時に破棄させないフラグを立てる
+		setRetainInstance(true);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        //activity再生成時に破棄させないフラグを立てる
-		setRetainInstance(true);
+		//NOTHING
     }
 
     //paramを復帰
@@ -131,6 +129,7 @@ public class Sync extends Fragment {
         public void onSyncParam(int[] param);
         public void onSyncSec();
         public void onSyncMin(String min);
+        public void onSyncTimeUp();
     }
 
     public void toActivity(int[] param) {
@@ -151,6 +150,11 @@ public class Sync extends Fragment {
         }
     }
 
+    public void onTimeUp(){
+        if (mListener != null) {
+            mListener.onSyncTimeUp();
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -210,7 +214,15 @@ public class Sync extends Fragment {
         }
     }
 
-    private void createTime() {
+    private void createTime(){
+        if(param[1] == 0){
+            createTimeSec();
+        }else{
+            createTimeMin();
+        }
+    }
+
+    private void createTimeMin() {
         s = sec % 60;
         m = (sec / 60) % 60;
         h = (sec / 60) / 60;
@@ -220,9 +232,32 @@ public class Sync extends Fragment {
                 onMinute("" + m);
             }
         }
-        if (h == param[2]) {
-            rewriteParam();
+        //設定時間で終了させる
+        if(param[2] == 0){
+            if(m == 10){
+                rewriteParam();
+            }
+        }else {
+            if (param[2] == h) {
+                rewriteParam();
+            }
         }
+    }
+
+    private void createTimeSec(){
+        sendSec();
+        onMinute("" + sec);
+        //設定時間で終了させる
+        if (param[2] == 0) {
+            if (sec == 100) {
+                rewriteParam();
+            }
+        } else {
+            if (param[2] == h) {
+                rewriteParam();
+            }
+        }
+
     }
 
     private void rewriteParam() {
@@ -232,6 +267,7 @@ public class Sync extends Fragment {
         toActivity(param);
         stopTimer();
         endTimer();
+        onTimeUp();
     }
 
 

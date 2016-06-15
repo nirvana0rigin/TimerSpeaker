@@ -11,9 +11,9 @@
 		</shape>
 	</item>
 	<item
-		android:bottom="1200dp"
-		android:left="600dp"
-		android:right="600dp"
+		android:bottom="1000dp"
+		android:left="500dp"
+		android:right="500dp"
 		android:top="0dp">
 		<bitmap android:src="@drawable/c03"/>
 	</item>

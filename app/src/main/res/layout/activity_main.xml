@@ -9,11 +9,6 @@
     tools:context=".MainActivity"
     android:id="@+id/activity_main">
 
-	<FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/bg">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -50,17 +45,21 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="top|right"
+                android:layout_marginRight="36dp"
+                android:layout_marginTop="36dp"
                 android:id="@+id/go_config" />
 
             <FrameLayout
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="bottom|right"
+                android:layout_marginRight="36dp"
+                android:layout_marginBottom="36dp"
                 android:id="@+id/reset" />
 
         </FrameLayout>
 
     </LinearLayout>
     </FrameLayout>
-	</FrameLayout>
+
 </LinearLayout>

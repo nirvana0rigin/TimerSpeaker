@@ -57,14 +57,19 @@ public class Reset extends Sync {
         return v;
     }
 
-    /*
+    @Override
     public void onResume() {
+        super.onResume();
+        if(param[4] != 1){
+        	removeButton();
+        }
+    }
+    /*
+    public void onStart()
     public void onStop() {
     public void onSaveInstanceState(Bundle outState) {
         //NOTHING
     */
-
-
     @Override
     public void onDetach() {
         super.onDetach();

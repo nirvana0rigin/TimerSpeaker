@@ -130,13 +130,24 @@ public class Counter extends Sync {
     }
 
     public void createTimeText(){
-        hh = getXX(h);
-        mm = getXX(m);
-        ss = getXX(s);
+        if(param[1] ==0){
+            hh = "00";
+            mm = "00";
+            ss = "" + sec;
+        }else{
+            hh = getXX(h);
+            mm = getXX(m);
+            ss = getXX(s);
+        }
         setCounterView();
     }
 
-    private String getXX(int i){
+    public void resetCounter() {
+        resetCounterString();
+        setCounterView();
+    }
+
+    private String getXX(int i) {
         String ii;
         if (i < 10) {
             ii = ("" + 0) + i;
@@ -145,13 +156,6 @@ public class Counter extends Sync {
         }
         return ii;
     }
-
-    public void resetCounter() {
-        resetCounterString();
-        setCounterView();
-    }
-
-
 
 
 

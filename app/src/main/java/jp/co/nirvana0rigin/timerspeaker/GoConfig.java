@@ -56,9 +56,15 @@ public class GoConfig extends Sync {
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (param[4] != 2) {
+            removeButton();
+        }
+    }
 	/*
 	public void onStart()
-    public void onResume() {
     public void onStop() {
     public void onSaveInstanceState(Bundle outState) {
         //NOTHING

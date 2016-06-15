@@ -66,8 +66,17 @@ public class Info extends Sync {
     public void onStart() {
         super.onStart();
         setBackground();
-        maxHours.setText(""+param[2]);
-        interval.setText("" + param[1]);
+        String mh ;
+        String in ;
+        if(param[2] ==0) {
+            maxHours.setText(R.string.one_hundred_seconds);
+        }else {
+            maxHours.setText(param[2] + res.getString(R.string.hours));
+        }if (param[1] == 0) {
+            interval.setText(R.string.per_one_seconds);
+        } else {
+            interval.setText(param[1] + res.getString(R.string.per_minute));
+        }
     }
 
     /*

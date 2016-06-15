@@ -48,7 +48,7 @@ public class MainActivity
 
     private Fragment[] fragments ;
 	private int[] fragmentsID;
-    private String[] fragmentsTag = {"counter","info","start","go_config","reset"};
+    private String[] fragmentsTag = {"counter","info","start","reset","go_config"};
     /*
         0: counter
         1: info
@@ -76,8 +76,8 @@ public class MainActivity
         b = savedInstanceState;
         fm = getSupportFragmentManager();
 
-        if (savedInstanceState != null) {
-            param = savedInstanceState.getIntArray("param");
+        if (b != null) {
+            param = b.getIntArray("param");
         } else {
             b = new Bundle();
             if(sync != null){
@@ -90,7 +90,7 @@ public class MainActivity
 
         base = (LinearLayout)findViewById(R.id.activity_main);
 
-        int[] fragmentsID2 = {R.id.counter, R.id.info, R.id.start, R.id.go_config, R.id.reset };
+        int[] fragmentsID2 = {R.id.counter, R.id.info, R.id.start, R.id.reset, R.id.go_config};
         fragmentsID = fragmentsID2;
 
     }
@@ -117,7 +117,6 @@ public class MainActivity
 
 	@Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putIntArray("param", param);
         super.onSaveInstanceState(outState);
     }
 
@@ -133,9 +132,6 @@ public class MainActivity
     @Override
     public void onConfig(){
         setBackground();
-        if(start!= null) {
-            start.removeCarAnim();
-        }
     }
 
     @Override
@@ -160,6 +156,9 @@ public class MainActivity
         if (goConfig != null) {
             goConfig.addButton();
         }
+        if (reset != null) {
+            reset.removeButton();
+        }
     }
 
     @Override
@@ -171,9 +170,10 @@ public class MainActivity
         }else if(param[4] == 1){
             reset.addButton();
         }else if (param[4] == 2) {
-            //NOTHING
+            //スレッド終了まではここではしないので、
+            //上記の変更以外はここではしない。
+            //スレッド終了に関してはresetにて。
         }
-		//タイマースレッドリセットは、resetボタンにて
 		if(param[6]==0){
 			sync.startTimer();
 		}else{
@@ -206,6 +206,11 @@ public class MainActivity
         }
     }
 
+    @Override
+    public void onSyncTimeUp(){
+        reset.addButton();
+        start.startButtonStatus();
+    }
 
 
 
@@ -232,7 +237,7 @@ public class MainActivity
         if (reset == null) {
             reset = new Reset();
         }
-        Fragment[] fragments2 = {counter, info, start, goConfig, reset};
+        Fragment[] fragments2 = {counter, info, start, reset,goConfig};
         fragments = fragments2;
     }
 
@@ -242,7 +247,7 @@ public class MainActivity
         	transaction.remove(config);
         	config = null;
         }
-        for(int i=0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             if (!isAlive(fragmentsTag[i])) {
                 transaction.add(fragmentsID[i], fragments[i], fragmentsTag[i]);
             }

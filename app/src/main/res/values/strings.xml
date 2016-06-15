@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TimerSpeaker</string>
-    <string name="max_time_title">max running hours:</string>
-    <string name="interval_time_title">speak every ? minutes:</string>
+    <string name="max_time_title">いつまではしる？:</string>
+    <string name="interval_time_title">おしらせのじかんは？:</string>
     <string name="config_title">くるまとじかんのせってい</string>
     <string name="cars">どのくるまに\nしようかな</string>
     <string name="interval">なんふん\nごとにはなす</string>
@@ -22,5 +22,12 @@
     <string name="lang_jp">分</string>
     <string name="lang_en">minute</string>
     <string name="start_jp">スタート</string>
+    <string name="one_seconds">一秒</string>
+    <string name="per_one_seconds">一秒ごと</string>
+    <string name="five_minute">5分</string>
+    <string name="one_hundred_seconds">百秒</string>
+    <string name="per_minute">分ごと</string>
+    <string name="seconds">秒</string>
+    <string name="hours">時間</string>
 
 </resources>
