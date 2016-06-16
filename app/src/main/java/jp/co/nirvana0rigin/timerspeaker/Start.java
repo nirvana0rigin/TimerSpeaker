@@ -18,11 +18,11 @@ public class Start extends Sync implements View.OnClickListener{
 
     private OnStartListener mListener;
     //private Bitmap carBitmap;
-    private static ImageView carView;
-    private static Button start;
+    private ImageView carView;
+    private Button start;
     private LinearLayout base;
     private View v;
-    private static ObjectAnimator anim;
+    private ObjectAnimator anim;
     //private static Bundle args;
 
 

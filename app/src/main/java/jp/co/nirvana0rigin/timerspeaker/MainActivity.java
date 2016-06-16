@@ -112,6 +112,7 @@ public class MainActivity
     @Override
     public void onStop() {
         b.putIntArray("param", param);
+        removeMainFragments();
         super.onStop();
     }
 
@@ -211,6 +212,8 @@ public class MainActivity
         reset.addButton();
         start.startButtonStatus();
     }
+
+
 
 
 
