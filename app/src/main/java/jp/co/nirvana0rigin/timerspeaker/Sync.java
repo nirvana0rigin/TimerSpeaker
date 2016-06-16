@@ -1,11 +1,16 @@
 package jp.co.nirvana0rigin.timerspeaker;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -75,6 +80,7 @@ public class Sync extends Fragment {
         }
 		//activity再生成時に破棄させないフラグを立てる
 		setRetainInstance(true);
+
     }
 
     @Override
@@ -87,6 +93,7 @@ public class Sync extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        showNotification(con);
 		param = args.getIntArray("param");
 		toActivity(param);
     }
@@ -191,6 +198,7 @@ public class Sync extends Fragment {
 
     public void endTimer() {
         if (scheduler != null) {
+            stopNotification(con);
             scheduler.shutdownNow();
             scheduler = null;
             sec = 0;
@@ -270,5 +278,30 @@ public class Sync extends Fragment {
         onTimeUp();
     }
 
+    // 通知バーを消す
+    private void stopNotification(final Context ctx) {
+        NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        mgr.cancel(R.layout.activity_main);
+    }
 
+    // 通知バーを出す
+    private void showNotification(final Context ctx) {
+
+        NotificationManager mgr = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(ctx, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(con, 0, intent, 0);
+
+        // 通知バーの内容を決める
+        Notification n = new NotificationCompat.Builder(ctx)
+                .setSmallIcon(R.drawable.ic)
+                .setTicker("サービスが起動しました。")
+                .setWhen(System.currentTimeMillis())    // 時間
+                .setContentTitle("サービス起動中")
+                .setContentText("このバーをタップ後に「サービス終了」を選択してください。")
+                .setContentIntent(contentIntent)// インテント
+                .build();
+        n.flags = Notification.FLAG_NO_CLEAR;
+        mgr.notify(R.layout.activity_main, n);
+
+    }
 }
